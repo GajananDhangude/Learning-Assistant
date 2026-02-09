@@ -52,7 +52,7 @@ async function LoginUser(req , res){
     const isPasswordvalid = await bcrypt.compare(password , user.password);
 
     if(!isPasswordvalid){
-        res.status(400).json({
+        return res.status(400).json({
             message:"Invalid email or password",
         })
     }
@@ -61,7 +61,7 @@ async function LoginUser(req , res){
         id:user._id,
     } , process.env.JWT_SECRET)
 
-    res.cookie("token", token)
+    res.cookie("token" , token)
 
     res.status(201).json({
         message:"User Logged in Successfully",
@@ -75,6 +75,32 @@ async function LoginUser(req , res){
     })
 }
 
+async function getCurrentUser(req , res){
+    try{
+        const userId = req.user._id
+
+        if(!userId){
+            res.status(400).json({
+                message:"Invalid UserId Please Login First"
+            })
+        }
+        const user = await UserModel.findById(userId);
+
+        res.status(201).json({
+            message:"fetched successful.",
+            user:{
+                id:user._id,
+                FirstName:user.firstname,
+                LastName:user.lastname,
+                Email:user.email,
+        }
+        })
+
+    } catch(error) {
+        res.status(401).json({error:error.message})
+    }
+}
+
 
 function LogoutUser(req , res){
     res.clearCookie("token");
@@ -85,5 +111,6 @@ function LogoutUser(req , res){
 module.exports = {
     RegisterUser,
     LoginUser,
+    getCurrentUser,
     LogoutUser
 }

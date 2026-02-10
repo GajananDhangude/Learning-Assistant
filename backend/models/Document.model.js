@@ -7,26 +7,35 @@ const DocumentSchema = new Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
         required:true,
-
     },
     filename:{
         type:String,
-        required:true,
+        required:true
     },
     originalname:{
         type:String,
-        required:true
+
+    },
+    filepath:{
+        type:String,
+        required:true,
     },
     filesize:{
         type:String,
-        required:true
     },
     status:{
         type:String,
         enum:['processing' , 'ready' , 'failed'],
         default:'processing'
-    }
-})
+    },
+    metadata:{
+        chunks:Number,
+        pages:Number,
+        processingTime:Number
+    },
+    error:String,
+    tags:[String]
+},{timestamps:true})
 
 
 const DocumentModel = mongoose.model('Document' , DocumentSchema)
